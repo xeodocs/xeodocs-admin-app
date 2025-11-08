@@ -1,0 +1,14 @@
+/* eslint-disable css/no-unknown-at-rules */
+@import "tailwindcss";
+
+@layer base {
+  html {
+    @apply bg-white text-black dark:bg-gray-900 dark:text-white;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700;
+  }
+}
