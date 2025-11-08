@@ -45,7 +45,7 @@ For detailed API specifications and system design documentation, refer to the [x
    pnpm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+4. Open [http://localhost:12010](http://localhost:12010) in your browser to view the application.
 
 #### Docker Development
 
@@ -60,7 +60,7 @@ For detailed API specifications and system design documentation, refer to the [x
    docker compose -f docker-compose.dev.yml up --build -d
    ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+3. Open [http://localhost:12010](http://localhost:12010) in your browser to view the application.
 
 The Docker setup provides hot reloading and isolates the development environment, ensuring consistency across different machines.
 

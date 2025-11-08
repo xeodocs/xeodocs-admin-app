@@ -8,5 +8,5 @@ trigger: always_on
 - Always use pnpm to handle the repository project
 - Never remove the .windsurf directory
 
-- The dev backend API is on http://localhost:8080
+- The dev backend API is on http://localhost:12020
 - You can see the API OpenAPI docs on the GitHub MCP server
