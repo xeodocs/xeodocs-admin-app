@@ -34,16 +34,6 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
-            XeoDocs
-          </h1>
-          <p className="text-gray-300 dark:text-gray-400 text-lg">
-            Admin Portal Access
-          </p>
-        </div>
-
         {/* Login Card */}
         <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 border border-white/20 dark:border-gray-700/50 rounded-2xl shadow-2xl p-8 relative">
           {/* Glow effect */}
@@ -51,8 +41,8 @@ export default function LoginPage() {
 
           <div className="relative z-10">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-semibold text-white dark:text-gray-100 mb-2">
-                Welcome Back
+              <h2 className="pl-2 text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-400 bg-clip-text text-transparent mb-2">
+                Welcome Back to XeoDocs
               </h2>
               <p className="text-gray-300 dark:text-gray-400 text-sm">
                 Enter your credentials to continue
@@ -71,6 +61,7 @@ export default function LoginPage() {
                     type="text"
                     autoComplete="username"
                     required
+                    autoFocus
                     className="w-full px-4 py-3 bg-white/5 dark:bg-black/20 border border-gray-300/30 dark:border-gray-600/30 rounded-lg text-white dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
                     placeholder="Enter your username"
                     value={username}

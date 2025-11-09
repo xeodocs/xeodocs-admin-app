@@ -53,7 +53,7 @@ export default function Home() {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                XeoDocs Admin Dashboard
+                XeoDocs Admin
               </h1>
             </div>
             <div className="flex items-center space-x-4">
