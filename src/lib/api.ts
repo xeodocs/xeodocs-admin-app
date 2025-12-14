@@ -1,8 +1,12 @@
 import axios from "axios";
 
-// Environment variable or default
-// Using local proxy to avoid CORS/Cookie issues
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api/v1";
+const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (!envApiUrl) {
+    throw new Error("NEXT_PUBLIC_API_URL is not configured");
+}
+
+const API_URL = `${envApiUrl}/v1`;
 
 export const api = axios.create({
     baseURL: API_URL,

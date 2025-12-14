@@ -15,6 +15,8 @@ import {
 import { Plus, Search, Edit2, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
+import { AlertModal } from "@/components/ui/alert-modal";
 
 interface User {
     id: string;
@@ -28,11 +30,16 @@ export default function UsersPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const router = useRouter();
+    const { user: currentUser } = useAuth();
+
+    // Alert Modal State
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            // Assuming response structure based on OpenAPI: { data: User[], pagination: ... }
             const response = await api.get("/users", {
                 params: { search },
             });
@@ -41,6 +48,32 @@ export default function UsersPage() {
             console.error("Failed to fetch users", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const onDeleteClick = (user: User) => {
+        if (user.id === currentUser?.id) {
+            alert("You cannot delete your own account.");
+            return;
+        }
+        setUserToDelete(user);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!userToDelete) return;
+
+        try {
+            setDeleteLoading(true);
+            await api.delete(`/users/${userToDelete.id}`);
+            setDeleteModalOpen(false);
+            setUserToDelete(null);
+            fetchUsers();
+        } catch (error: any) {
+            console.error("Failed to delete user", error);
+            alert(error.response?.data?.message || "Failed to delete user.");
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -54,6 +87,16 @@ export default function UsersPage() {
 
     return (
         <div className="space-y-6">
+            <AlertModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                loading={deleteLoading}
+                title="Are you absolutely sure?"
+                description={`This action cannot be undone. This will permanently delete the user account for ${userToDelete?.name} and remove their data from our servers.`}
+                confirmText="Delete Account"
+            />
+
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Users</h2>
                 <Button onClick={() => router.push("/users/new")} className="gap-2">
@@ -113,7 +156,12 @@ export default function UsersPage() {
                                             >
                                                 <Edit2 className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-destructive hover:text-destructive"
+                                                onClick={() => onDeleteClick(user)}
+                                            >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
