@@ -8,5 +8,10 @@ trigger: always_on
 - Always use pnpm to handle the repository project
 - Never remove the .windsurf directory
 
-- The dev backend API is on http://localhost:12020
-- You can see the API OpenAPI docs on the GitHub MCP server
+- The dev backend API is on http://dev-api.xeodocs.localhost:12020
+
+Implementation:
+- If an endpoint returns a list of elements, in the case that no elements exist yet, it will always return an empty array `[]`, never `null`.
+
+Code:
+- Always write the code, comments and documentation in English, even when the prompt is not in English.
