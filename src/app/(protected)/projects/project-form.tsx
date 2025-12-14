@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import { LanguagesManager } from "./languages-manager";
+import { LanguagesManager } from "./LanguagesManager";
 
 interface ProjectFormProps {
     initialData?: any;
@@ -41,7 +41,7 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
 
         try {
             if (isEditing) {
-                await api.put(`/projects/${initialData.id}`, formData);
+                await api.patch(`/projects/${initialData.id}`, formData);
             } else {
                 await api.post("/projects", formData);
             }

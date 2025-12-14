@@ -35,7 +35,7 @@ export function UserForm({ initialData }: UserFormProps) {
             if (isEditing) {
                 // Update logic - Assuming PUT /users/{id}
                 // Note: Spec didn't explicitly show update endpoint, assuming standard REST.
-                await api.put(`/users/${initialData.id}`, { name, email });
+                await api.patch(`/users/${initialData.id}`, { name, email });
             } else {
                 await api.post("/users", { name, email, password });
             }

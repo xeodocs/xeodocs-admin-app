@@ -10,54 +10,55 @@ export function AnimatedBackground() {
         setMounted(true);
     }, []);
 
-    if (!mounted) return null;
-
     return (
         <div className="fixed inset-0 -z-10 overflow-hidden bg-background">
-            {/* Animated Gradient Orbs */}
-            <motion.div
-                className="absolute -top-[10%] -left-[10%] h-[50%] w-[50%] rounded-full bg-primary/20 blur-[120px]"
-                animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                    rotate: [0, 90, 0],
-                }}
-                transition={{
-                    duration: 15,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-            />
+            {/* Animated Gradient Orbs - Optimized */}
+            <div className={`transition-opacity duration-1000 ${mounted ? "opacity-100" : "opacity-0"}`}>
+                <motion.div
+                    initial={{ opacity: 0.3, scale: 1 }}
+                    animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.3, 0.4, 0.3],
+                    }}
+                    transition={{
+                        duration: 15,
+                        repeat: Infinity,
+                        ease: "linear",
+                    }}
+                    className="absolute -top-[10%] -left-[10%] h-[50%] w-[50%] rounded-full bg-primary/10 blur-[80px]"
+                    style={{ willChange: "transform, opacity" }}
+                />
 
-            <motion.div
-                className="absolute top-[20%] right-[0%] h-[40%] w-[40%] rounded-full bg-secondary/10 blur-[100px]"
-                animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.2, 0.4, 0.2],
-                    x: [0, -50, 0],
-                }}
-                transition={{
-                    duration: 12,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 2,
-                }}
-            />
+                <motion.div
+                    initial={{ opacity: 0.2, x: 0 }}
+                    animate={{
+                        x: [0, -30, 0],
+                        opacity: [0.2, 0.3, 0.2],
+                    }}
+                    transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: "linear",
+                    }}
+                    className="absolute top-[20%] right-[0%] h-[40%] w-[40%] rounded-full bg-secondary/10 blur-[80px]"
+                    style={{ willChange: "transform, opacity" }}
+                />
 
-            <motion.div
-                className="absolute -bottom-[10%] left-[20%] h-[60%] w-[60%] rounded-full bg-accent/20 blur-[150px]"
-                animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.2, 0.4, 0.2],
-                    y: [0, -30, 0],
-                }}
-                transition={{
-                    duration: 18,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 4,
-                }}
-            />
+                <motion.div
+                    initial={{ opacity: 0.2, y: 0 }}
+                    animate={{
+                        y: [0, -30, 0],
+                        opacity: [0.2, 0.3, 0.2],
+                    }}
+                    transition={{
+                        duration: 25,
+                        repeat: Infinity,
+                        ease: "linear",
+                    }}
+                    className="absolute -bottom-[10%] left-[20%] h-[60%] w-[60%] rounded-full bg-accent/10 blur-[100px]"
+                    style={{ willChange: "transform, opacity" }}
+                />
+            </div>
 
             {/* Grid Overlay */}
             <div
