@@ -126,7 +126,7 @@ export default function ProjectsPage() {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                onClick={() => router.push(`/projects/${project.id}`)}
+                                                onClick={() => router.push(`/projects/edit?id=${project.id}`)}
                                             >
                                                 <Edit2 className="h-4 w-4" />
                                             </Button>

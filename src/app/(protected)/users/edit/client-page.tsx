@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { UserForm } from "../user-form";
 import { api } from "@/lib/api";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
-export default function EditUserPage() {
-    const params = useParams();
+export default function EditUserClientPage() {
+    const searchParams = useSearchParams();
+    const id = searchParams.get("id");
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -15,7 +16,7 @@ export default function EditUserPage() {
             try {
                 // Assuming GET /users/{id}
                 // If not available, we might need to filter from list
-                const response = await api.get(`/users/${params.id}`);
+                const response = await api.get(`/users/${id}`);
                 // Response format? Assuming { data: User }
                 setUser(response.data.data || response.data);
             } catch (error) {
@@ -25,10 +26,10 @@ export default function EditUserPage() {
             }
         };
 
-        if (params.id) {
+        if (id) {
             fetchUser();
         }
-    }, [params.id]);
+    }, [id]);
 
     if (loading) {
         return <div>Loading...</div>;

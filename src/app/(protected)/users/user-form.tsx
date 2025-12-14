@@ -35,7 +35,11 @@ export function UserForm({ initialData }: UserFormProps) {
             if (isEditing) {
                 // Update logic - Assuming PUT /users/{id}
                 // Note: Spec didn't explicitly show update endpoint, assuming standard REST.
-                await api.patch(`/users/${initialData.id}`, { name, email });
+                const payload: any = { name, email };
+                if (password) {
+                    payload.password = password;
+                }
+                await api.patch(`/users/${initialData.id}`, payload);
             } else {
                 await api.post("/users", { name, email, password });
             }
@@ -86,17 +90,23 @@ export function UserForm({ initialData }: UserFormProps) {
                                 disabled={isEditing} // Often email is immutable or ID
                             />
                         </div>
-                        {!isEditing && (
-                            <div className="grid gap-2">
-                                <label className="text-sm font-medium">Password</label>
-                                <Input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        )}
+                        <div className="grid gap-2">
+                            <label className="text-sm font-medium">
+                                {isEditing ? "New Password" : "Password"}
+                            </label>
+                            <Input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required={!isEditing}
+                                placeholder={isEditing ? "Leave blank to keep current" : ""}
+                            />
+                            {isEditing && (
+                                <p className="text-xs text-muted-foreground">
+                                    Leave blank to keep the current password.
+                                </p>
+                            )}
+                        </div>
                     </CardContent>
                     <CardFooter>
                         <Button type="submit" disabled={loading} className="ml-auto">
