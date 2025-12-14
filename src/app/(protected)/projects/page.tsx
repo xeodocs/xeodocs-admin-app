@@ -16,6 +16,8 @@ import { Plus, Search, Edit2, Trash2, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 
+import { AlertModal } from "@/components/ui/alert-modal";
+
 interface Project {
     id: string;
     name: string;
@@ -31,6 +33,11 @@ export default function ProjectsPage() {
     const [search, setSearch] = useState("");
     const router = useRouter();
 
+    // Alert Modal State
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+
     const fetchProjects = async () => {
         try {
             setLoading(true);
@@ -45,6 +52,28 @@ export default function ProjectsPage() {
         }
     };
 
+    const onDeleteClick = (project: Project) => {
+        setProjectToDelete(project);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!projectToDelete) return;
+
+        try {
+            setDeleteLoading(true);
+            await api.delete(`/projects/${projectToDelete.id}`);
+            setDeleteModalOpen(false);
+            setProjectToDelete(null);
+            fetchProjects();
+        } catch (error: any) {
+            console.error("Failed to delete project", error);
+            alert(error.response?.data?.message || "Failed to delete project.");
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
+
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             fetchProjects();
@@ -55,6 +84,16 @@ export default function ProjectsPage() {
 
     return (
         <div className="space-y-6">
+            <AlertModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                loading={deleteLoading}
+                title="Are you absolutely sure?"
+                description={`This action cannot be undone. This will permanently delete the project "${projectToDelete?.name}" and remove all its data from our servers.`}
+                confirmText="Delete Project"
+            />
+
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Projects</h2>
                 <Button onClick={() => router.push("/projects/new")} className="gap-2">
@@ -130,7 +169,12 @@ export default function ProjectsPage() {
                                             >
                                                 <Edit2 className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-destructive hover:text-destructive"
+                                                onClick={() => onDeleteClick(project)}
+                                            >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
