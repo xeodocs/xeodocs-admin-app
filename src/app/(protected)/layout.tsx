@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -33,12 +33,30 @@ export default function ProtectedLayout({
         return null; // Will redirect
     }
 
+    const getPageTitle = (path: string) => {
+        if (path === "/") return "Dashboard";
+        if (path.startsWith("/users")) {
+            if (path.includes("/new")) return "New User";
+            if (path.includes("/edit")) return "Edit User";
+            return "Users";
+        }
+        if (path.startsWith("/projects")) {
+            if (path.includes("/new")) return "New Project";
+            if (path.includes("/edit")) return "Edit Project";
+            return "Projects";
+        }
+        if (path.startsWith("/settings")) return "Settings";
+        return "Dashboard";
+    };
+
+    const title = getPageTitle(usePathname());
+
     return (
         <div className="flex min-h-screen">
             <AppSidebar />
             <main className="ml-64 flex-1 p-8">
                 <div className="mb-8 flex items-center justify-between">
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-md">Dashboard</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-md">{title}</h1>
                     <ThemeToggle />
                 </div>
                 <div className="animate-in fade-in slide-in-from-bottom-5 duration-500">

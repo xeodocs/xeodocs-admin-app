@@ -94,14 +94,7 @@ export default function ProjectsPage() {
                 confirmText="Delete Project"
             />
 
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold tracking-tight">Projects</h2>
-                <Button onClick={() => router.push("/projects/new")} className="gap-2">
-                    <Plus className="h-4 w-4" /> New Project
-                </Button>
-            </div>
-
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-4">
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -111,6 +104,9 @@ export default function ProjectsPage() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
+                <Button onClick={() => router.push("/projects/new")} className="gap-2">
+                    <Plus className="h-4 w-4" /> New Project
+                </Button>
             </div>
 
             <div className="rounded-md border border-border/50">

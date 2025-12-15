@@ -81,9 +81,6 @@ export function UserForm({ initialData }: UserFormProps) {
                 <Button variant="ghost" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <h2 className="text-2xl font-bold tracking-tight">
-                    {isEditing ? "Edit User" : "Create User"}
-                </h2>
             </div>
 
             <Card className="max-w-2xl border-primary/10 bg-card/40 backdrop-blur-md">

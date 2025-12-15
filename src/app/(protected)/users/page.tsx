@@ -97,14 +97,7 @@ export default function UsersPage() {
                 confirmText="Delete Account"
             />
 
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold tracking-tight">Users</h2>
-                <Button onClick={() => router.push("/users/new")} className="gap-2">
-                    <Plus className="h-4 w-4" /> New User
-                </Button>
-            </div>
-
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-4">
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -114,6 +107,9 @@ export default function UsersPage() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
+                <Button onClick={() => router.push("/users/new")} className="gap-2">
+                    <Plus className="h-4 w-4" /> New User
+                </Button>
             </div>
 
             <div className="rounded-md border border-border/50">

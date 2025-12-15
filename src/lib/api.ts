@@ -18,9 +18,14 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Redirect to login if unauthorized
-            if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
-                window.location.href = "/login";
+            // Clear local storage to prevent persistence of stale session
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("xeodocs_user");
+
+                // Redirect to login if unauthorized
+                if (!window.location.pathname.startsWith("/login")) {
+                    window.location.href = "/login";
+                }
             }
         }
         return Promise.reject(error);

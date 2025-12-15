@@ -61,9 +61,6 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
                 <Button variant="ghost" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <h2 className="text-2xl font-bold tracking-tight">
-                    {isEditing ? "Edit Project" : "Create Project"}
-                </h2>
             </div>
 
             <div className="grid gap-8 lg:grid-cols-3">
