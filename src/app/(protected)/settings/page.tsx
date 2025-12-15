@@ -11,41 +11,68 @@ import { Loader2 } from "lucide-react";
 export default function SettingsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+
+    // Config state
     const [syncInterval, setSyncInterval] = useState("");
+    const [wakeInterval, setWakeInterval] = useState("");
+
+    // Existence flags
+    const [syncIntervalExists, setSyncIntervalExists] = useState(false);
+    const [wakeIntervalExists, setWakeIntervalExists] = useState(false);
+
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    const [configExists, setConfigExists] = useState(false);
-
-    const CONFIG_KEY = "project_sync_interval";
+    const SYNC_INTERVAL_KEY = "project_sync_interval";
+    const WAKE_INTERVAL_KEY = "worker_wake_interval";
 
     useEffect(() => {
-        loadConfiguration();
+        loadConfigurations();
     }, []);
 
-    const loadConfiguration = async () => {
+    const loadConfigurations = async () => {
         try {
             setIsLoading(true);
-            const data = await configurationsService.get(CONFIG_KEY);
-            setSyncInterval(data.data.value);
-            setConfigExists(true);
-        } catch (err) {
-            const error = err as AxiosError;
-            // If 404, it might not be set yet, leave empty or default
-            if (error.response?.status === 404) {
-                setConfigExists(false);
-            } else {
-                console.error("Failed to load configuration", err);
-                setError("Failed to load settings");
+
+            // Load project_sync_interval
+            try {
+                const syncData = await configurationsService.get(SYNC_INTERVAL_KEY);
+                setSyncInterval(syncData.data.value);
+                setSyncIntervalExists(true);
+            } catch (err) {
+                const error = err as AxiosError;
+                if (error.response?.status !== 404) throw err;
+                setSyncIntervalExists(false);
             }
+
+            // Load worker_wake_interval
+            try {
+                const wakeData = await configurationsService.get(WAKE_INTERVAL_KEY);
+                setWakeInterval(wakeData.data.value);
+                setWakeIntervalExists(true);
+            } catch (err) {
+                const error = err as AxiosError;
+                if (error.response?.status !== 404) throw err;
+                setWakeIntervalExists(false);
+            }
+
+        } catch (err) {
+            console.error("Failed to load configurations", err);
+            setError("Failed to load settings. Please try again.");
         } finally {
             setIsLoading(false);
         }
     };
 
     const validateDuration = (duration: string) => {
-        // Go duration regex pattern (simplified)
-        // Matches sequences like 2h, 45m, 30s, 2h30m, etc.
+        if (!duration) return true; // Allow empty to mean "use default" if user desires, or handle strictly? 
+        // User request implied format required if set. Let's enforce format if not empty.
+        // Actually, if it's empty, we might not send it or send empty? 
+        // Let's assume input is required if they are setting it.
+        // But for "not set", they might clear it? 
+        // For now, let's stick to the regex if value is present.
+        if (duration.trim() === "") return true;
+
         const pattern = /^(\d+(\.\d*)?(ns|us|µs|ms|s|m|h))+$/;
         return pattern.test(duration);
     };
@@ -55,29 +82,44 @@ export default function SettingsPage() {
         setError("");
         setSuccessMessage("");
 
-        if (!validateDuration(syncInterval)) {
-            setError("Invalid duration format. Example: 2h30m40s");
+        // Validate
+        if (syncInterval && !validateDuration(syncInterval)) {
+            setError(`Invalid Sync Interval format: "${syncInterval}". Example: 2h30m`);
+            return;
+        }
+        if (wakeInterval && !validateDuration(wakeInterval)) {
+            setError(`Invalid Wake Interval format: "${wakeInterval}". Example: 1h`);
             return;
         }
 
         try {
             setIsSaving(true);
 
-            if (configExists) {
-                await configurationsService.update(CONFIG_KEY, syncInterval);
-            } else {
-                await configurationsService.create(CONFIG_KEY, syncInterval);
-                setConfigExists(true);
+            // Save Sync Interval
+            if (syncInterval) {
+                if (syncIntervalExists) {
+                    await configurationsService.update(SYNC_INTERVAL_KEY, syncInterval);
+                } else {
+                    await configurationsService.create(SYNC_INTERVAL_KEY, syncInterval);
+                    setSyncIntervalExists(true);
+                }
+            }
+
+            // Save Wake Interval
+            if (wakeInterval) {
+                if (wakeIntervalExists) {
+                    await configurationsService.update(WAKE_INTERVAL_KEY, wakeInterval);
+                } else {
+                    await configurationsService.create(WAKE_INTERVAL_KEY, wakeInterval);
+                    setWakeIntervalExists(true);
+                }
             }
 
             setSuccessMessage("Settings saved successfully");
+            setTimeout(() => setSuccessMessage(""), 3000);
 
-            // Clear success message after 3 seconds
-            setTimeout(() => {
-                setSuccessMessage("");
-            }, 3000);
         } catch (err) {
-            console.error("Failed to save configuration", err);
+            console.error("Failed to save configurations", err);
             setError("Failed to save settings");
         } finally {
             setIsSaving(false);
@@ -100,28 +142,54 @@ export default function SettingsPage() {
 
             <Card className="max-w-2xl">
                 <CardHeader>
-                    <CardTitle>Project Synchronization</CardTitle>
+                    <CardTitle>System Settings</CardTitle>
                     <CardDescription>
-                        Configure how often the system checks for updates in source repositories.
-                        If not set, a default value of 24h is applied.
+                        Configure core system intervals and behaviors.
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSave}>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
+                        {/* Worker Wake Interval */}
                         <div className="space-y-2">
-                            <label htmlFor="sync-interval" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Sync Interval
+                            <label htmlFor="wake-interval" className="text-sm font-medium leading-none">
+                                Worker Wake Interval
                             </label>
+                            <p className="text-xs text-muted-foreground">
+                                Configure the time the system waits before re-running the process that triggers synchronization for all pending projects.
+                                Default: 1h.
+                            </p>
+                            <Input
+                                id="wake-interval"
+                                placeholder="e.g. 1h"
+                                value={wakeInterval}
+                                onChange={(e) => setWakeInterval(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Project Sync Interval */}
+                        <div className="space-y-2">
+                            <label htmlFor="sync-interval" className="text-sm font-medium leading-none">
+                                Project Sync Interval
+                            </label>
+                            <p className="text-xs text-muted-foreground">
+                                Configure the time each project will wait before it is synchronized again. How often checks for updates in source repositories
+                                Default: 24h.
+                            </p>
                             <Input
                                 id="sync-interval"
                                 placeholder="e.g. 2h30m40s"
                                 value={syncInterval}
                                 onChange={(e) => setSyncInterval(e.target.value)}
                             />
+                        </div>
+
+                        {/* Common Format Note */}
+                        <div className="rounded-md bg-muted p-3">
                             <p className="text-xs text-muted-foreground">
-                                Format: Duration string (e.g. &quot;10m&quot;, &quot;1h30m&quot;). Valid units: ns, us, ms, s, m, h.
+                                <strong>Format:</strong> Go duration string (e.g. &quot;10m&quot;, &quot;1h30m&quot;). Valid units: ns, us, ms, s, m, h.
                             </p>
                         </div>
+
                         {error && (
                             <p className="text-sm font-medium text-destructive">{error}</p>
                         )}
