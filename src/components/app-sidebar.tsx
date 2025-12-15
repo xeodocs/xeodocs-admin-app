@@ -19,6 +19,7 @@ export function AppSidebar() {
         { href: "/", label: "Dashboard", icon: LayoutDashboard },
         { href: "/users", label: "Users", icon: Users },
         { href: "/projects", label: "Projects", icon: FolderKanban },
+        { href: "/settings", label: "Settings", icon: Settings },
     ];
 
     return (
