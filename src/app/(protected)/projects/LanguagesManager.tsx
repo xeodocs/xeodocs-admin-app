@@ -5,7 +5,7 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, Code } from "lucide-react";
+import { Plus, Trash2, Code, Edit2 } from "lucide-react";
 import { AlertModal } from "@/components/ui/alert-modal";
 
 interface Language {
@@ -56,6 +56,39 @@ export function LanguagesManager({ projectId }: { projectId: string }) {
             console.error("Failed to add language", error);
         } finally {
             setAdding(false);
+        }
+    };
+
+    // Editing State
+    const [editingLangId, setEditingLangId] = useState<string | null>(null);
+    const [editingData, setEditingData] = useState({ code: "", name: "", domain: "" });
+    const [updating, setUpdating] = useState(false);
+
+    const handleEditClick = (lang: Language) => {
+        setEditingLangId(lang.id);
+        setEditingData({
+            code: lang.code,
+            name: lang.name,
+            domain: lang.domain || ""
+        });
+    };
+
+    const handleUpdate = async () => {
+        if (!editingLangId || !editingData.code || !editingData.name) return;
+
+        try {
+            setUpdating(true);
+            await api.patch(`/languages/${editingLangId}`, {
+                ...editingData,
+                projectId
+            });
+            setEditingLangId(null);
+            fetchLanguages();
+        } catch (error) {
+            console.error("Failed to update language", error);
+            // Optionally set error state here if needed
+        } finally {
+            setUpdating(false);
         }
     };
 
@@ -148,28 +181,73 @@ export function LanguagesManager({ projectId }: { projectId: string }) {
                             <div className="text-sm text-muted-foreground">No languages added.</div>
                         ) : (
                             languages.map(lang => (
-                                <div key={lang.id} className="flex items-center justify-between rounded-md border border-border/50 bg-background/20 p-2">
-                                    <div className="flex flex-col gap-0.5">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm font-medium">{lang.name}</span>
-                                            <span className="flex items-center rounded bg-secondary/50 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
-                                                {lang.code}
-                                            </span>
+                                <div key={lang.id} className="flex flex-col gap-2 rounded-md border border-border/50 bg-background/20 p-2">
+                                    {editingLangId === lang.id ? (
+                                        <div className="grid gap-2">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Input
+                                                    className="h-8 text-xs"
+                                                    value={editingData.code}
+                                                    onChange={(e) => setEditingData(p => ({ ...p, code: e.target.value }))}
+                                                    placeholder="Code"
+                                                />
+                                                <Input
+                                                    className="h-8 text-xs"
+                                                    value={editingData.name}
+                                                    onChange={(e) => setEditingData(p => ({ ...p, name: e.target.value }))}
+                                                    placeholder="Name"
+                                                />
+                                            </div>
+                                            <Input
+                                                className="h-8 text-xs"
+                                                value={editingData.domain}
+                                                onChange={(e) => setEditingData(p => ({ ...p, domain: e.target.value }))}
+                                                placeholder="Domain"
+                                            />
+                                            <div className="flex justify-end gap-2">
+                                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingLangId(null)}>
+                                                    Cancel
+                                                </Button>
+                                                <Button size="sm" className="h-7 px-2 text-xs" onClick={handleUpdate} disabled={updating}>
+                                                    {updating ? "Saving..." : "Save"}
+                                                </Button>
+                                            </div>
                                         </div>
-                                        {lang.domain && (
-                                            <span className="text-xs text-muted-foreground truncate max-w-[280px]" title={lang.domain}>
-                                                {lang.domain}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 text-destructive hover:bg-destructive/10"
-                                        onClick={() => onDeleteClick(lang)}
-                                    >
-                                        <Trash2 className="h-3 w-3" />
-                                    </Button>
+                                    ) : (
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex flex-col gap-0.5">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm font-medium">{lang.name}</span>
+                                                    <span className="flex items-center rounded bg-secondary/50 px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                                                        {lang.code}
+                                                    </span>
+                                                </div>
+                                                {lang.domain && (
+                                                    <span className="text-xs text-muted-foreground truncate max-w-[280px]" title={lang.domain}>
+                                                        {lang.domain}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                                    onClick={() => handleEditClick(lang)}
+                                                >
+                                                    <Edit2 className="h-3 w-3" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 text-destructive hover:bg-destructive/10"
+                                                    onClick={() => onDeleteClick(lang)}
+                                                >
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ))
                         )}
