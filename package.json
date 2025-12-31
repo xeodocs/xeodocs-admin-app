@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H dev-admin.xeodocs.localhost -p 12101",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
