@@ -20,12 +20,12 @@ export const metadata: Metadata = {
   description: "Administrator Dashboard for XeoDocs",
   icons: {
     icon: [
-      { url: '/favicon.ico' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+      { url: '/favicon.ico?v=1' },
+      { url: '/favicon.svg?v=1', type: 'image/svg+xml' },
+      { url: '/favicon-96x96.png?v=1', type: 'image/png', sizes: '96x96' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180' },
+      { url: '/apple-touch-icon.png?v=1', sizes: '180x180' },
     ],
   },
   manifest: '/site.webmanifest',
